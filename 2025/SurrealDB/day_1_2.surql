@@ -1,3 +1,4 @@
+
 CREATE temp:input SET value = "L47
 R26
 L18
@@ -4704,10 +4705,23 @@ FOR $instruction IN $instructions {
     
     -- Update dial
     UPDATE $dialId SET value = $wrappedValue;
-    
-    -- If it's zero, increase password
-    IF $wrappedValue = 0 {
-        UPDATE $passId SET value += 1;
+
+    -- Calculate how many time we pass 0
+    IF $dial = 0 {
+        LET $revolutions = $instruction.abs() / 100;
+        UPDATE $passId SET value += $revolutions;
+    } ELSE IF $instruction > 0 {
+        LET $distTo100 = 100 - $dial;
+        IF $instruction >= $distTo100 {
+            LET $extraRevolutions = ($instruction - $distTo100) / 100;
+            UPDATE $passId SET value += 1 + $extraRevolutions;
+        }
+    } ELSE IF $instruciton < 0 {
+        LET $distTo0 = $dial * -1;
+        IF $instruction <= $distTo0 {
+            LET $extraRevolutions = ($instruction - $distTo0).abs() / 100;
+            UPDATE $passId SET value += 1 + $extraRevolutions;
+        }
     };
 
     -- DEBUG
@@ -4720,5 +4734,11 @@ FOR $instruction IN $instructions {
     -- };
 };
 
+-- Get password
+LET $finalPass = SELECT VALUE value FROM ONLY $passId;
+
+-- Delete the temp table
+REMOVE TABLE temp;
+
 -- Return the password
-SELECT VALUE value FROM ONLY $passId;
+RETURN $finalPass;
