@@ -34,7 +34,7 @@ LET $patternDefs = $input.split(',')
                 -- Handle different lenghts
                 LET $repsLeft = $state.data.from.len() / $patternLen;
                 LET $isDivisibleLeft = IF ($state.data.from.len() = $repsLeft * $patternLen) { true; } ELSE { false; };
-                LET $resultLeft = IF $repsLeft > 1 AND $isDivisibleLeft {
+                LET $resultLeft = IF $repsLeft = 2 AND $isDivisibleLeft {
                     LET $newRange = {
                         from: $state.data.from.slice(0,$patternLen),
                         to: array::repeat('9', $patternLen).join(''),
@@ -49,7 +49,7 @@ LET $patternDefs = $input.split(',')
             
                 LET $repsRight = $state.data.to.len() / $patternLen;
                 LET $isDivisibleRight = IF ($state.data.to.len() = $repsRight * $patternLen) { true; } ELSE { false; };
-                LET $resultRight = IF $repsRight > 1 AND $isDivisibleRight {
+                LET $resultRight = IF $repsRight = 2 AND $isDivisibleRight {
                     LET $newRange = {
                         from: '1' + array::repeat('0', $patternLen - 1).join(''),
                         to: $state.data.to.slice(0,$patternLen),
@@ -69,7 +69,7 @@ LET $patternDefs = $input.split(',')
                 LET $reps = $state.data.from.len() / $patternLen;
                 LET $isDivisible = IF ($state.data.from.len() = $reps * $patternLen) { true; } ELSE { false; }; -- No modulo operator :(
             
-                LET $result = IF $reps > 1 AND $isDivisible {
+                LET $result = IF $reps = 2 AND $isDivisible {
                     LET $newRange = [{
                         from: $state.data.from.slice(0,$patternLen),
                         to: $state.data.to.slice(0,$patternLen),
